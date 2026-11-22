@@ -3,9 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
+  <title>RADICI</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div class="wrap">
+  <div class="top"><h1>RADICI</h1><span class="sub">prototipo giocabile</span></div>
+  <div id="hud" class="hud win" hidden></div>
 
+  <!-- CREAZIONE -->
+  <section id="s-create" class="screen active">
+    <p>Scegli un elemento e un'arma, poi entra dal tronco e scendi lungo le radici. Ogni radice porta a una destinazione diversa.</p>
+    <h2>1. Elemento</h2>
+    <div class="cards" id="el-cards"></div>
+    <h2>2. Arma</h2>
+    <div class="cards" id="wp-cards"></div>
+    <div class="row">
+      <label>Nome <input id="pname" maxlength="16" placeholder="Viandante"></label>
+      <button class="btn big" id="start" disabled>Entra nel tronco</button>
+      <button class="btn big" id="continue" hidden>Continua partita salvata</button>
+    </div>
+    <details class="how win">
+      <summary>Come si combatte</summary>
+      <ul>
+        <li>Ogni nodo della mappa è uno scontro. Il nemico viene estratto a caso quando ci arrivi.</li>
+        <li>Il nemico mostra cosa farà al prossimo turno: attacco, colpo pesante o guardia (subisce metà danni).</li>
+        <li>Ogni turno recuperi 1 ✦ (massimo 5). Le abilità elementali costano ✦, la tecnica d'arma ha una ricarica.</li>
+        <li>Elementi: Fuoco batte Terra, Terra batte Aria, Aria batte Acqua, Acqua batte Fuoco.</li>
+        <li>Armi: Spada batte i Coriacei, Lancia gli Agili, Ascia i Corazzati, Falce gli Spettrali. Ognuna soffre un tipo diverso.</li>
+        <li>Dopo 3 vittorie il tuo elemento si evolve. Sconfitto il boss di una radice, scendi nell'Atto II.</li>
+        <li>Tasti rapidi in battaglia: 1 attacco, 2 elemento, 3 tecnica, 4 difesa. Nei dialoghi: clic, Invio o Spazio.</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- MAPPA -->
+  <section id="s-map" class="screen">
+    <h2 id="map-title"></h2>
+    <div class="mapbox win"><svg id="mapsvg" viewBox="0 0 800 790"></svg></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <!-- BATTAGLIA -->
+  <section id="s-battle" class="screen">
+    <div class="stage" id="stage">
+      <div class="ehud win">
+        <div class="ehud-top"><b id="e-name"></b><span id="e-hptext"></span></div>
+        <div class="bar"><i id="e-hpbar"></i></div>
+        <div class="chips" id="e-chips"></div>
+        <div class="intent" id="e-intent"></div>
+      </div>
+      <div class="esprite" id="e-sprite"></div>
+    </div>
+    <div id="log" class="win"></div>
+    <div class="bottom">
+      <div class="win cmd"><div class="actions" id="actions"></div></div>
+      <div class="win pstat" id="pstat">
+        <div class="pst-top">
+          <div class="pst-portrait" id="p-portrait"></div>
+          <div>
+            <b id="p-name"></b>
+            <div>✦ <span class="pips" id="p-pips"></span></div>
+            <div class="mute" id="p-turn"></div>
+          </div>
+        </div>
+        <div class="chips" id="p-chips"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- DIALOGO -->
+<div id="dialog" hidden>
+  <div class="win dlg">
+    <div class="dlg-portrait" id="dlg-portrait"></div>
+    <div class="dlg-body">
+      <div class="dlg-name" id="dlg-name"></div>
+      <div class="dlg-text" id="dlg-text"></div>
+      <div class="dlg-foot"><span class="dlg-draft" id="dlg-draft">bozza</span><span class="dlg-next" id="dlg-next">▼</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="modal"></div>
+
+<!-- Ordine di caricamento: dati, sistemi, interfaccia, avvio. Niente moduli ES: funziona anche aprendo il file da disco. -->
+<script src="js/data/elements.js"></script>
+<script src="js/data/weapons.js"></script>
+<script src="js/data/enemies.js"></script>
+<script src="js/data/maps.js"></script>
+<script src="js/data/story.js"></script>
+<script src="js/data/assets.js"></script>
+<script src="js/systems/state.js"></script>
+<script src="js/ui/common.js"></script>
+<script src="js/ui/dialog.js"></script>
+<script src="js/ui/create.js"></script>
+<script src="js/ui/map.js"></script>
+<script src="js/ui/battle-ui.js"></script>
+<script src="js/systems/battle.js"></script>
+<script src="js/systems/flow.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
