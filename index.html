@@ -1,107 +1,171 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RADICI</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Prototipo X</title>
+  <style>
+    :root{--ink:#f2f2f8;--mute:#a9b0d6;--gold:#f5cf6a;--win1:#1f2f86;--win2:#0e1850;--winb:#e9ecfb}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{background:radial-gradient(ellipse at 50% 30%,#18246a,#0a0d24 55%,#04050d);color:var(--ink);
+      font-family:Georgia,'Times New Roman',serif;overflow:hidden}
+
+    .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px}
+    .screen.active{display:flex}
+
+    /* titolo */
+    #s-title{cursor:pointer;user-select:none}
+    .logo{margin:0;font-size:clamp(40px,10vw,86px);letter-spacing:.18em;color:var(--gold);text-align:center;
+      text-shadow:0 4px 0 #000,0 0 32px rgba(245,207,106,.35)}
+    .press{color:var(--mute);font-size:clamp(15px,2.5vw,20px);letter-spacing:.12em;animation:blink 1.5s infinite}
+    @keyframes blink{50%{opacity:.25}}
+
+    /* finestre e bottoni, stile JRPG */
+    .win{background:linear-gradient(180deg,var(--win1),var(--win2));border:2px solid var(--winb);border-radius:8px;
+      box-shadow:inset 0 0 0 2px rgba(0,0,20,.5),0 3px 14px rgba(0,0,0,.55)}
+    .menu{display:flex;flex-direction:column;gap:12px;width:min(320px,82vw)}
+    .btn{font-family:inherit;font-size:19px;color:var(--ink);text-align:center;padding:12px 18px;cursor:pointer;
+      background:linear-gradient(180deg,#2f43a8,#18246e);border:2px solid var(--winb);border-radius:8px;
+      box-shadow:inset 0 0 0 2px rgba(0,0,20,.45)}
+    .btn:hover,.btn:focus-visible{outline:none;border-color:var(--gold);filter:brightness(1.25)}
+    .btn.sel{border-color:var(--gold);background:linear-gradient(180deg,#5367d6,#2a3b9c)}
+
+    /* opzioni */
+    .panel{width:min(480px,92vw);padding:22px 24px;display:flex;flex-direction:column;gap:18px}
+    .panel h2{margin:0;color:var(--gold);font-size:22px;text-align:center;letter-spacing:.08em}
+    .row{display:flex;flex-direction:column;gap:8px}
+    .row>label,.row>.lbl{color:var(--mute);font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+    .langs{display:flex;gap:10px}.langs .btn{flex:1;font-size:17px;padding:9px 12px}
+    .slider{display:flex;align-items:center;gap:12px}
+    .slider span.name{width:92px;font-size:16px}
+    .slider input{flex:1;accent-color:var(--gold)}
+    .slider span.val{width:38px;text-align:right;font-variant-numeric:tabular-nums}
+    .vols{display:flex;flex-direction:column;gap:12px}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top"><h1>RADICI</h1><span class="sub">prototipo giocabile</span></div>
-  <div id="hud" class="hud win" hidden></div>
 
-  <!-- CREAZIONE -->
-  <section id="s-create" class="screen active">
-    <p>Scegli un elemento e un'arma, poi entra dal tronco e scendi lungo le radici. Ogni radice porta a una destinazione diversa.</p>
-    <h2>1. Elemento</h2>
-    <div class="cards" id="el-cards"></div>
-    <h2>2. Arma</h2>
-    <div class="cards" id="wp-cards"></div>
-    <div class="row">
-      <label>Nome <input id="pname" maxlength="16" placeholder="Viandante"></label>
-      <button class="btn big" id="start" disabled>Entra nel tronco</button>
-      <button class="btn big" id="continue" hidden>Continua partita salvata</button>
-    </div>
-    <details class="how win">
-      <summary>Come si combatte</summary>
-      <ul>
-        <li>Ogni nodo della mappa è uno scontro. Il nemico viene estratto a caso quando ci arrivi.</li>
-        <li>Il nemico mostra cosa farà al prossimo turno: attacco, colpo pesante o guardia (subisce metà danni).</li>
-        <li>Ogni turno recuperi 1 ✦ (massimo 5). Le abilità elementali costano ✦, la tecnica d'arma ha una ricarica.</li>
-        <li>Elementi: Fuoco batte Terra, Terra batte Aria, Aria batte Acqua, Acqua batte Fuoco.</li>
-        <li>Armi: Spada batte i Coriacei, Lancia gli Agili, Ascia i Corazzati, Falce gli Spettrali. Ognuna soffre un tipo diverso.</li>
-        <li>Dopo 3 vittorie il tuo elemento si evolve. Sconfitto il boss di una radice, scendi nell'Atto II.</li>
-        <li>Tasti rapidi in battaglia: 1 attacco, 2 elemento, 3 tecnica, 4 difesa. Nei dialoghi: clic, Invio o Spazio.</li>
-      </ul>
-    </details>
+  <!-- SCHERMATA TITOLO -->
+  <section id="s-title" class="screen active">
+    <h1 class="logo">PROTOTIPO X</h1>
+    <div class="press" data-i18n="clickToStart">Click to start</div>
   </section>
 
-  <!-- MAPPA -->
-  <section id="s-map" class="screen">
-    <h2 id="map-title"></h2>
-    <div class="mapbox win"><svg id="mapsvg" viewBox="0 0 800 790"></svg></div>
-    <div class="legend" id="legend"></div>
+  <!-- MENU PRINCIPALE -->
+  <section id="s-menu" class="screen">
+    <h1 class="logo">PROTOTIPO X</h1>
+    <div class="menu">
+      <button class="btn" id="b-new" data-i18n="newGame">New Game</button>
+      <button class="btn" id="b-load" data-i18n="loadGame">Load Game</button>
+      <button class="btn" id="b-options" data-i18n="options">Options</button>
+    </div>
   </section>
 
-  <!-- BATTAGLIA -->
-  <section id="s-battle" class="screen">
-    <div class="stage" id="stage">
-      <div class="ehud win">
-        <div class="ehud-top"><b id="e-name"></b><span id="e-hptext"></span></div>
-        <div class="bar"><i id="e-hpbar"></i></div>
-        <div class="chips" id="e-chips"></div>
-        <div class="intent" id="e-intent"></div>
-      </div>
-      <div class="esprite" id="e-sprite"></div>
-    </div>
-    <div id="log" class="win"></div>
-    <div class="bottom">
-      <div class="win cmd"><div class="actions" id="actions"></div></div>
-      <div class="win pstat" id="pstat">
-        <div class="pst-top">
-          <div class="pst-portrait" id="p-portrait"></div>
-          <div>
-            <b id="p-name"></b>
-            <div>✦ <span class="pips" id="p-pips"></span></div>
-            <div class="mute" id="p-turn"></div>
-          </div>
+  <!-- OPZIONI -->
+  <section id="s-options" class="screen">
+    <div class="win panel">
+      <h2 data-i18n="options">Options</h2>
+
+      <div class="row">
+        <div class="lbl" data-i18n="language">Language</div>
+        <div class="langs">
+          <button class="btn" data-lang="en">English</button>
+          <button class="btn" data-lang="it">Italiano</button>
         </div>
-        <div class="chips" id="p-chips"></div>
       </div>
+
+      <div class="row">
+        <div class="lbl" data-i18n="volume">Volume</div>
+        <div class="vols">
+          <div class="slider"><span class="name" data-i18n="vMaster">Master</span><input type="range" min="0" max="100" data-vol="master"><span class="val"></span></div>
+          <div class="slider"><span class="name" data-i18n="vMusic">Music</span><input type="range" min="0" max="100" data-vol="music"><span class="val"></span></div>
+          <div class="slider"><span class="name" data-i18n="vSfx">Effects</span><input type="range" min="0" max="100" data-vol="sfx"><span class="val"></span></div>
+        </div>
+      </div>
+
+      <button class="btn" id="b-back" data-i18n="back">Back</button>
     </div>
   </section>
-</div>
 
-<!-- DIALOGO -->
-<div id="dialog" hidden>
-  <div class="win dlg">
-    <div class="dlg-portrait" id="dlg-portrait"></div>
-    <div class="dlg-body">
-      <div class="dlg-name" id="dlg-name"></div>
-      <div class="dlg-text" id="dlg-text"></div>
-      <div class="dlg-foot"><span class="dlg-draft" id="dlg-draft">bozza</span><span class="dlg-next" id="dlg-next">▼</span></div>
-    </div>
-  </div>
-</div>
+<script>
+'use strict';
 
-<div id="modal"></div>
+/* ---------- Testi (inglese = lingua di partenza) ---------- */
+const I18N = {
+  en: { clickToStart: 'Click to start', newGame: 'New Game', loadGame: 'Load Game', options: 'Options',
+        language: 'Language', volume: 'Volume', vMaster: 'Master', vMusic: 'Music', vSfx: 'Effects', back: 'Back' },
+  it: { clickToStart: 'Clicca per iniziare', newGame: 'Nuova partita', loadGame: 'Carica partita', options: 'Opzioni',
+        language: 'Lingua', volume: 'Volume', vMaster: 'Generale', vMusic: 'Musica', vSfx: 'Effetti', back: 'Indietro' }
+};
 
-<!-- Ordine di caricamento: dati, sistemi, interfaccia, avvio. Niente moduli ES: funziona anche aprendo il file da disco. -->
-<script src="js/data/elements.js"></script>
-<script src="js/data/weapons.js"></script>
-<script src="js/data/enemies.js"></script>
-<script src="js/data/maps.js"></script>
-<script src="js/data/story.js"></script>
-<script src="js/data/assets.js"></script>
-<script src="js/systems/state.js"></script>
-<script src="js/ui/common.js"></script>
-<script src="js/ui/dialog.js"></script>
-<script src="js/ui/create.js"></script>
-<script src="js/ui/map.js"></script>
-<script src="js/ui/battle-ui.js"></script>
-<script src="js/systems/battle.js"></script>
-<script src="js/systems/flow.js"></script>
-<script src="js/main.js"></script>
+/* ---------- Impostazioni (salvate nel browser) ---------- */
+const KEY = 'prototipox.settings';
+const DEFAULTS = { lang: 'en', vol: { master: 80, music: 80, sfx: 80 } };
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s && I18N[s.lang]) return { lang: s.lang, vol: Object.assign({}, DEFAULTS.vol, s.vol) };
+  } catch (e) { /* ignora */ }
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function saveSettings() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignora */ }
+}
+const S = loadSettings();
+
+/* ---------- Interfaccia ---------- */
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+function show(id) {
+  $$('.screen').forEach(s => s.classList.remove('active'));
+  $('#s-' + id).classList.add('active');
+  const first = $('#s-' + id + ' .btn');
+  if (first && id !== 'title') first.focus({ preventScroll: true });
+}
+
+function applyLang() {
+  document.documentElement.lang = S.lang;
+  $$('[data-i18n]').forEach(el => { el.textContent = I18N[S.lang][el.dataset.i18n]; });
+  $$('[data-lang]').forEach(b => b.classList.toggle('sel', b.dataset.lang === S.lang));
+}
+
+function applyVolumes() {
+  $$('[data-vol]').forEach(inp => {
+    const k = inp.dataset.vol;
+    inp.value = S.vol[k];
+    inp.parentElement.querySelector('.val').textContent = S.vol[k];
+  });
+}
+
+/* titolo -> menu */
+$('#s-title').addEventListener('click', () => show('menu'));
+document.addEventListener('keydown', (e) => {
+  if ($('#s-title').classList.contains('active') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show('menu'); }
+  if ($('#s-options').classList.contains('active') && e.key === 'Escape') show('menu');
+  // frecce su/giu per scorrere i bottoni del menu
+  if ($('#s-menu').classList.contains('active') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    e.preventDefault();
+    const b = Array.from($$('#s-menu .btn')), i = b.indexOf(document.activeElement);
+    b[(i + (e.key === 'ArrowDown' ? 1 : -1) + b.length) % b.length].focus();
+  }
+});
+
+/* menu: per ora Nuova partita e Carica partita non fanno nulla */
+$('#b-options').addEventListener('click', () => show('options'));
+$('#b-back').addEventListener('click', () => show('menu'));
+
+/* opzioni */
+$$('[data-lang]').forEach(b => b.addEventListener('click', () => { S.lang = b.dataset.lang; saveSettings(); applyLang(); }));
+$$('[data-vol]').forEach(inp => inp.addEventListener('input', () => {
+  S.vol[inp.dataset.vol] = +inp.value;
+  inp.parentElement.querySelector('.val').textContent = inp.value;
+  saveSettings();
+}));
+
+applyLang();
+applyVolumes();
+</script>
 </body>
 </html>
