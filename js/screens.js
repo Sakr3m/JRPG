@@ -73,24 +73,32 @@
   }
   const healAll = () => G.party.forEach(m => { m.hp = m.maxHp; }); // provvisorio: dopo ogni scontro si torna in forma
 
-  /* ---------- mappa ---------- */
-  function adjacent(a, b) { return X.WORLD.edges.some(([x, y]) => (x === a && y === b) || (x === b && y === a)); }
+  /* ---------- mappa (albero verticale, si sale verso l'alto) ---------- */
+  const N = () => X.WORLD.nodes;
+  const kids = (id) => Object.keys(N()).filter(k => N()[k].parent === id);
+  // posizione a schermo dei nodi visibili, relativa al nodo in cui si trova il giocatore
+  const CUR = { x: 200, y: 400 }, AHEAD_Y = 170, BEHIND_Y = 570, FORK_DX = 190;
+  function layout() {
+    const L = {}, c = kids(G.pos), par = N()[G.pos].parent;
+    L[G.pos] = { x: CUR.x, y: CUR.y, role: 'cur' };
+    c.forEach((id, i) => { L[id] = { x: CUR.x + (i - (c.length - 1) / 2) * FORK_DX, y: AHEAD_Y, role: 'ahead' }; });
+    if (par) L[par] = { x: CUR.x, y: BEHIND_Y, role: 'behind' };
+    return L;
+  }
 
   function renderWorld() {
-    const W = X.WORLD; let h = '';
-    W.edges.forEach(([a, b]) => {
-      const A = W.nodes[a], B = W.nodes[b];
-      h += '<line class="w-edge" x1="' + A.x + '" y1="' + A.y + '" x2="' + B.x + '" y2="' + B.y + '"/>';
+    const L = layout(); let h = '';
+    Object.entries(L).forEach(([id, p]) => {
+      if (p.role !== 'cur') h += '<line class="w-edge" x1="' + CUR.x + '" y1="' + CUR.y + '" x2="' + p.x + '" y2="' + p.y + '"/>';
     });
-    Object.entries(W.nodes).forEach(([id, n]) => {
-      const done = !!G.done[id], go = id !== G.pos && adjacent(G.pos, id);
-      h += '<g class="w-node' + (done ? ' done' : '') + (go ? ' go' : '') + '" data-id="' + id + '">' +
-        '<circle class="base" cx="' + n.x + '" cy="' + n.y + '" r="30"/>' +
-        '<text x="' + n.x + '" y="' + (n.y + 1) + '">' + (done ? '✔' : id) + '</text></g>';
+    Object.entries(L).forEach(([id, p]) => {
+      const go = p.role !== 'cur';
+      h += '<g class="w-node' + (G.done[id] ? ' done' : '') + (go ? ' go' : '') + (p.role === 'behind' ? ' behind' : '') + '" data-id="' + id + '">' +
+        '<circle class="base" cx="' + p.x + '" cy="' + p.y + '" r="32"/>' +
+        '<text x="' + p.x + '" y="' + (p.y + 1) + '">' + (G.done[id] ? '✔' : id) + '</text></g>';
     });
-    const p = W.nodes[G.pos];
-    h += '<g id="marker" style="transform:translate(' + p.x + 'px,' + p.y + 'px)">' +
-      '<circle class="ring" r="42"/><polygon class="dot" points="-9,-66 9,-66 0,-52"/></g>';
+    h += '<g id="marker" style="transform:translate(' + CUR.x + 'px,' + CUR.y + 'px)">' +
+      '<circle class="ring" r="46"/><polygon class="dot" points="-9,-72 9,-72 0,-58"/></g>';
     $('#world').innerHTML = h;
   }
 
@@ -100,9 +108,9 @@
   });
 
   function moveTo(id) {
-    const n = X.WORLD.nodes[id];
+    const p = layout()[id], n = N()[id];
     G.moving = true;
-    $('#marker').style.transform = 'translate(' + n.x + 'px,' + n.y + 'px)';
+    $('#marker').style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
     setTimeout(() => {
       const prev = G.pos;
       G.pos = id; G.moving = false;
@@ -161,7 +169,7 @@
   const firstAlive = () => G.party.find(m => m.hp > 0);
 
   function startBattle(id, prev) {
-    const node = X.WORLD.nodes[id];
+    const node = N()[id];
     G.bt = { id, prev, b: X.Battle.create(G.party, X.MONSTERS[node.monster]), busy: true, result: null };
     $('#m-art').className = 'monster';
     $('#m-art').innerHTML = X.ART[G.bt.b.monster.art];

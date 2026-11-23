@@ -75,12 +75,13 @@ html.no-mobile #s-mobile{display:flex!important}
 .back{position:absolute;top:16px;left:18px;background:none;border:0;color:var(--mute);font-family:inherit;font-size:17px;
   letter-spacing:.08em;cursor:pointer;padding:6px 10px;transition:color .2s,text-shadow .2s}
 .back:hover,.back:focus{outline:none;color:var(--gold);text-shadow:0 0 14px rgba(245,207,106,.6)}
-#world{width:min(920px,94vw);height:auto;overflow:visible}
+#world{height:min(82vh,760px);width:auto;max-width:94vw;overflow:visible}
 .w-edge{stroke:#6a74c4;stroke-width:5;stroke-linecap:round;stroke-dasharray:2 11;opacity:.8}
 .w-node circle.base{fill:#1c2566;stroke:var(--gold);stroke-width:4;transition:fill .3s,stroke .3s}
 .w-node text{fill:var(--ink);font-size:26px;text-anchor:middle;dominant-baseline:central;pointer-events:none;font-family:inherit}
 .w-node.go{cursor:pointer}
 .w-node.go circle.base{animation:pulse 1.5s infinite}
+.w-node.behind{opacity:.55}
 .w-node.done circle.base{fill:#1d4a30;stroke:#7fd18a;animation:none}
 @keyframes pulse{50%{stroke-width:7}}
 #marker{transition:transform .5s ease}

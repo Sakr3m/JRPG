@@ -12,14 +12,17 @@
     dustHound: { id: 'dustHound', hp: 40, atk: [3, 6], art: 'dustHound' }
   };
 
-  /* ---- mappa: nodi (A = partenza) e strade tra i nodi ---- */
+  /* ---- mappa ad albero: ogni nodo ha un padre (da dove si arriva). I figli sono le strade davanti.
+          Il giocatore vede solo il nodo in cui si trova, la strada dietro e i nodi subito davanti: il resto resta nascosto. ---- */
   X.WORLD = {
     start: 'A',
     nodes: {
-      A: { x: 190, y: 150, type: 'start' },
-      B: { x: 610, y: 150, type: 'fight', monster: 'dustHound' }
-    },
-    edges: [['A', 'B']]
+      A: { parent: null, type: 'start' },
+      B: { parent: 'A', type: 'fight', monster: 'dustHound' },
+      C: { parent: 'B', type: 'fight', monster: 'dustHound' },
+      D: { parent: 'B', type: 'fight', monster: 'dustHound' },
+      E: { parent: 'C', type: 'fight', monster: 'dustHound' }
+    }
   };
 
   /* ---- grafica provvisoria dei mostri (SVG) ---- */
