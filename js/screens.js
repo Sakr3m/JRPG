@@ -73,11 +73,11 @@
   }
   const healAll = () => G.party.forEach(m => { m.hp = m.maxHp; }); // provvisorio: dopo ogni scontro si torna in forma
 
-  /* ---------- mappa (albero verticale, si sale verso l'alto) ---------- */
+  /* ---------- mappa (albero verticale, si scende verso il basso) ---------- */
   const N = () => X.WORLD.nodes;
   const kids = (id) => Object.keys(N()).filter(k => N()[k].parent === id);
   // posizione a schermo dei nodi visibili, relativa al nodo in cui si trova il giocatore
-  const CUR = { x: 200, y: 400 }, AHEAD_Y = 170, BEHIND_Y = 570, FORK_DX = 190;
+  const CUR = { x: 200, y: 230 }, AHEAD_Y = 460, BEHIND_Y = 60, FORK_DX = 190;
   function layout() {
     const L = {}, c = kids(G.pos), par = N()[G.pos].parent;
     L[G.pos] = { x: CUR.x, y: CUR.y, role: 'cur' };
