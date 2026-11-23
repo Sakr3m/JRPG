@@ -1,6 +1,6 @@
 /* Impostazioni (lingua e volumi), salvate nel browser. */
 (function (X) {
-  const KEY = 'prototipox.settings';
+  const KEY = 'prototipox.settings'; // nome interno vecchio, tenuto uguale per non azzerare le impostazioni gia' salvate
   const DEFAULTS = { lang: 'en', vol: { master: 80, music: 80, sfx: 80 } };
 
   function load() {
